@@ -1,7 +1,6 @@
 package fr.lubac.boutiqueSki.dal.jdbc;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,19 +9,17 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.microsoft.sqlserver.jdbc.SQLServerDriver;
-
 import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
+import fr.lubac.boutiqueSki.dal.ArticleDAO;
 
-public class ArticleDaoJdbcImpl {
-    private static final String DATABASE_NAME = "BOUTIQUESKI_DB";
+public class ArticleDaoJdbcImpl implements ArticleDAO {
     private static final String TABLE_NAME = "Articles";
-    private static final String HOST = "//localhost:1433";
-    private static final String DB_USER = "sa";
-    private static final String DB_PASSWORD = "password";
 
+    // ---------
+    // SQL QUERY
+    // ---------
     private static final String sqlSelectById = "select idArticle, reference, marque, designation, prixUnitaire, qteStock, longueur, couleur, type "
             + "from " + TABLE_NAME + " where idArticle = ?";
     private static final String sqlSelectAll = "SELECT * from Articles";
@@ -31,31 +28,8 @@ public class ArticleDaoJdbcImpl {
             + "(reference,marque,designation,prixUnitaire,qteStock,longueur,couleur, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String sqlDelete = "DELETE FROM " + TABLE_NAME + " WHERE idArticle=?";
 
-    private Connection connection;
-
     // Constructor
     public ArticleDaoJdbcImpl() {
-    }
-
-    private Connection getConnection() throws SQLException {
-        if (connection == null) {
-            // load jdbc driver in memory :
-            DriverManager.registerDriver(new SQLServerDriver());
-            // url :
-            String url = "jdbc:sqlserver:" + HOST + ";databaseName=" + DATABASE_NAME + ";trustServerCertificate=true";
-            // get connection :
-            this.connection = DriverManager.getConnection(url, DB_USER, DB_PASSWORD);
-        }
-        return this.connection;
-    }
-
-    private void closeConnection() throws SQLException {
-        if (this.connection != null) {
-            this.connection.close();
-            System.out.println("Connexion à la base fermée");
-            this.connection = null;
-        }
-
     }
 
     public Article selectById(int id) {
@@ -64,7 +38,7 @@ public class ArticleDaoJdbcImpl {
         Article article = null;
 
         try {
-            con = getConnection();
+            con = JdbcTools.getConnection();
             // Prepare Statement :
             pstmt = con.prepareStatement(sqlSelectById);
             pstmt.setInt(1, id);
@@ -103,7 +77,7 @@ public class ArticleDaoJdbcImpl {
                 }
             }
             try {
-                closeConnection();
+                JdbcTools.closeConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -117,7 +91,7 @@ public class ArticleDaoJdbcImpl {
         Statement stmt = null;
 
         try {
-            con = getConnection();
+            con = JdbcTools.getConnection();
             // Create Statement :
             stmt = con.createStatement();
             // execute request :
@@ -155,7 +129,7 @@ public class ArticleDaoJdbcImpl {
                 }
             }
             try {
-                closeConnection();
+                JdbcTools.closeConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -169,7 +143,7 @@ public class ArticleDaoJdbcImpl {
         PreparedStatement pstmt = null;
 
         try {
-            con = getConnection();
+            con = JdbcTools.getConnection();
             pstmt = con.prepareStatement(sqlUpdate);
 
             pstmt.setString(1, article.getReference());
@@ -203,7 +177,7 @@ public class ArticleDaoJdbcImpl {
                 }
             }
             try {
-                closeConnection();
+                JdbcTools.closeConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -216,7 +190,7 @@ public class ArticleDaoJdbcImpl {
         PreparedStatement pstmt = null;
 
         try {
-            con = this.getConnection();
+            con = JdbcTools.getConnection();
             pstmt = con.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
 
             pstmt.setString(1, article.getReference());
@@ -259,7 +233,7 @@ public class ArticleDaoJdbcImpl {
                 }
             }
             try {
-                closeConnection();
+                JdbcTools.closeConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -271,7 +245,7 @@ public class ArticleDaoJdbcImpl {
         PreparedStatement pstmt = null;
 
         try {
-            con = this.getConnection();
+            con = JdbcTools.getConnection();
             // Prepare Statement :
             pstmt = con.prepareStatement(sqlDelete);
             pstmt.setInt(1, id);
@@ -290,7 +264,7 @@ public class ArticleDaoJdbcImpl {
                 }
             }
             try {
-                closeConnection();
+                JdbcTools.closeConnection();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
