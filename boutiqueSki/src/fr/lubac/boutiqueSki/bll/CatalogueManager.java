@@ -7,6 +7,7 @@ import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.dal.ArticleDAO;
+import fr.lubac.boutiqueSki.dal.DALException;
 import fr.lubac.boutiqueSki.dal.DAOFactory;
 
 /**
@@ -36,9 +37,14 @@ public class CatalogueManager {
      * 
      */
 
-    public List<Article> getCatalogue() {
+    public List<Article> getCatalogue() throws BLLException {
         List<Article> catalogueArticles = new ArrayList<>();
-        catalogueArticles = this.daoArticle.selectAll();
+        try {
+            catalogueArticles = this.daoArticle.selectAll();
+        } catch (DALException e) {
+            e.printStackTrace();
+            throw new BLLException("Erreur récupération catalogue", e);
+        }
         return catalogueArticles;
     }
 
@@ -49,7 +55,13 @@ public class CatalogueManager {
      * @throws BLLException
      */
     public Article getArticle(int id) throws BLLException {
-        return this.daoArticle.selectById(id);
+        Article a = null;
+        try {
+            a = this.daoArticle.selectById(id);
+        } catch (DALException e) {
+            throw new BLLException("Erreur récupération de l'article n°" + id, e);
+        }
+        return a;
     }
 
     /**
@@ -62,8 +74,13 @@ public class CatalogueManager {
      */
 
     public void addArticle(Article article) throws BLLException {
-        this.validerArticle(article);
-        this.daoArticle.insert(article);
+
+        try {
+            this.validerArticle(article);
+            this.daoArticle.insert(article);
+        } catch (DALException e) {
+            throw new BLLException("Echec addArticle", e);
+        }
     }
 
     /**
@@ -73,8 +90,13 @@ public class CatalogueManager {
      * @throws BLLException
      */
     public void updateArticle(Article article) throws BLLException {
-        this.validerArticle(article);
-        this.daoArticle.update(article);
+
+        try {
+            this.validerArticle(article);
+            this.daoArticle.update(article);
+        } catch (DALException e) {
+            throw new BLLException("Echec updateArticle de l'article:" + article, e);
+        }
     }
 
     /**
@@ -85,7 +107,11 @@ public class CatalogueManager {
      */
 
     public void removeArticle(int id) throws BLLException {
-        this.daoArticle.delete(id);
+        try {
+            this.daoArticle.delete(id);
+        } catch (DALException e) {
+            throw new BLLException("Echec de la suppression de l'article - ", e);
+        }
     }
 
     /**

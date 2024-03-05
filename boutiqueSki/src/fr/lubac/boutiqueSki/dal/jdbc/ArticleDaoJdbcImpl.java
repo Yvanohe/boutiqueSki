@@ -13,6 +13,7 @@ import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.dal.ArticleDAO;
+import fr.lubac.boutiqueSki.dal.DALException;
 
 public class ArticleDaoJdbcImpl implements ArticleDAO {
     private static final String TABLE_NAME = "Articles";
@@ -32,7 +33,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
     public ArticleDaoJdbcImpl() {
     }
 
-    public Article selectById(int id) {
+    public Article selectById(int id) throws DALException {
         PreparedStatement pstmt = null;
         Connection con = null;
         Article article = null;
@@ -67,7 +68,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DALException("Echec du SelectById - id = " + id, e);
         } finally {
             if (pstmt != null) {
                 try {
@@ -85,7 +86,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
         return article;
     }
 
-    public List<Article> selectAll() {
+    public List<Article> selectAll() throws DALException {
         List<Article> listArticles = new ArrayList<>();
         Connection con = null;
         Statement stmt = null;
@@ -119,7 +120,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DALException("Echec du selectAll - ", e);
         } finally {
             if (stmt != null) {
                 try {
@@ -138,7 +139,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
         return listArticles;
     }
 
-    public void update(Article article) {
+    public void update(Article article) throws DALException {
         Connection con = null;
         PreparedStatement pstmt = null;
 
@@ -167,7 +168,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DALException("Echec de la mise à jour de l'article : " + article, e);
         } finally {
             if (pstmt != null) {
                 try {
@@ -185,7 +186,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
         }
     }
 
-    public void insert(Article article) {
+    public void insert(Article article) throws DALException {
         Connection con = null;
         PreparedStatement pstmt = null;
 
@@ -223,7 +224,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DALException("Echec de l'ajout d'un article : " + article, e);
         } finally {
             if (pstmt != null) {
                 try {
@@ -240,7 +241,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
         }
     }
 
-    public void delete(int id) {
+    public void delete(int id) throws DALException {
         Connection con = null;
         PreparedStatement pstmt = null;
 
@@ -253,8 +254,7 @@ public class ArticleDaoJdbcImpl implements ArticleDAO {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new DALException("Echec de la suppression de l'article n°" + id, e);
         } finally {
             if (pstmt != null) {
                 try {
