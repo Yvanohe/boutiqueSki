@@ -6,15 +6,18 @@ import fr.lubac.boutiqueSki.bll.BLLException;
 import fr.lubac.boutiqueSki.bll.CatalogueManager;
 import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Ski;
+import fr.lubac.boutiqueSki.ihm.ecrArticle.EcranArticle;
+import fr.lubac.boutiqueSki.ihm.ecrCatalogue.EcranCatalogue;
 
 public class ArticleController {
     private EcranArticle ecranArticle;
+    private EcranCatalogue ecranCatalogue;
     private CatalogueManager cmgr;
     private List<Article> listeArticles;
     private static ArticleController instance;
     private int indexCatalogue;
 
-    protected static ArticleController getInstance() {
+    public static ArticleController getInstance() {
         if (instance == null) {
             instance = new ArticleController();
         }
@@ -36,8 +39,10 @@ public class ArticleController {
     // Control of article to display
     public void startApp() {
         this.ecranArticle = new EcranArticle();
+        this.ecranCatalogue = new EcranCatalogue();
         this.afficherPremierArticle();
         ecranArticle.setVisible(true);
+        ecranCatalogue.setVisible(true);
     }
 
     public void afficherPremierArticle() {
@@ -121,6 +126,10 @@ public class ArticleController {
             this.ecranArticle.afficherArticle(this.listeArticles.get(indexCatalogue));
         }
 
+    }
+
+    public List<Article> getCatalogue() {
+        return this.listeArticles;
     }
 
 }

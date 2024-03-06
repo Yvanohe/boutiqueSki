@@ -1,4 +1,4 @@
-package fr.lubac.boutiqueSki.ihm;
+package fr.lubac.boutiqueSki.ihm.ecrArticle;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -9,12 +9,10 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -26,11 +24,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import fr.lubac.boutiqueSki.bll.BLLException;
-import fr.lubac.boutiqueSki.bll.CatalogueManager;
 import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
+import fr.lubac.boutiqueSki.ihm.ArticleController;
 
 public class EcranArticle extends JFrame {
     private JLabel lblRef, lblDesign, lblMarque, lblStock, lblPrix, lblType, lblLongueur, lblCouleur;
@@ -43,7 +40,6 @@ public class EcranArticle extends JFrame {
     private Integer iDArticleCourant;
 
     public EcranArticle() {
-
         this.setTitle("Catalogue articles");
         this.setSize(new Dimension(500, 400));
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -119,7 +115,7 @@ public class EcranArticle extends JFrame {
     // CONTROLS VIEW
     // -------------
 
-    protected void afficherArticle(Article article) {
+    public void afficherArticle(Article article) {
         this.iDArticleCourant = article.getIdArticle();
 
         getTxtRef().setText(article.getReference().trim());
@@ -149,7 +145,6 @@ public class EcranArticle extends JFrame {
             // couleur checkbox
             getComboBoxCouleur().setEnabled(true);
             getComboBoxCouleur().setSelectedItem(((Combinaison) article).getCouleur());
-
         }
 
         getRbtnSki().setEnabled(article.getIdArticle() == null);
@@ -368,7 +363,7 @@ public class EcranArticle extends JFrame {
             });
 
             try {
-                Image img = ImageIO.read(getClass().getResource("./images/Back24.gif"));
+                Image img = ImageIO.read(getClass().getResource("../images/Back24.gif"));
                 btnPrecedent.setIcon(new ImageIcon(img));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -389,7 +384,7 @@ public class EcranArticle extends JFrame {
                 }
             });
             try {
-                Image img = ImageIO.read(getClass().getResource("./images/New24.gif"));
+                Image img = ImageIO.read(getClass().getResource("../images/New24.gif"));
                 btnNouveau.setIcon(new ImageIcon(img));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -408,7 +403,7 @@ public class EcranArticle extends JFrame {
                 }
             });
             try {
-                Image img = ImageIO.read(getClass().getResource("./images/Save24.gif"));
+                Image img = ImageIO.read(getClass().getResource("../images/Save24.gif"));
                 btnSauvegarde.setIcon(new ImageIcon(img));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -428,7 +423,7 @@ public class EcranArticle extends JFrame {
 
             });
             try {
-                Image img = ImageIO.read(getClass().getResource("./images/Delete24.gif"));
+                Image img = ImageIO.read(getClass().getResource("../images/Delete24.gif"));
                 btnSupprimer.setIcon(new ImageIcon(img));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -447,7 +442,7 @@ public class EcranArticle extends JFrame {
                 }
             });
             try {
-                Image img = ImageIO.read(getClass().getResource("./images/Forward24.gif"));
+                Image img = ImageIO.read(getClass().getResource("../images/Forward24.gif"));
                 btnSuivant.setIcon(new ImageIcon(img));
             } catch (IOException e) {
                 e.printStackTrace();

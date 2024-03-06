@@ -12,9 +12,7 @@ public class BoutiqueSkiApp {
             public void run() {
                 ArticleController.getInstance().startApp();
             }
-
         });
-
     }
 
 }
