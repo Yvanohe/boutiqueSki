@@ -143,6 +143,11 @@ public class CatalogueManager {
             sb.append("La référence de l'article ne doit pas être vide.\n");
         }
 
+        if (article.getReference().length() > 10) {
+            valide = false;
+            sb.append("La référence de l'article ne doit pas faire plus de 10 caractères.\n");
+        }
+
         if (article.getPrixUnitaire() == 0) {
             valide = false;
             sb.append("Le prix de l'article ne doit pas être nul.\n");
@@ -155,9 +160,9 @@ public class CatalogueManager {
 
         if (article instanceof Ski) {
             Ski ski = (Ski) article;
-            if (ski.getLongueur() == 0) {
+            if (ski.getLongueur() != 150 && ski.getLongueur() != 166) {
                 valide = false;
-                sb.append("La longueur des ski doit être supérieure à 0.\n");
+                sb.append("La longueur des ski doit être égale a 150 ou 166.\n");
             }
         }
 

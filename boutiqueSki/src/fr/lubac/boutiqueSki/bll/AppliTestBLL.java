@@ -14,10 +14,10 @@ public class AppliTestBLL {
 		List<Article> articles = new ArrayList<>();
 		Combinaison combinaison = new Combinaison("Bic", "BBOrange", "Bic bille Orange", 1.2f, 20, "bleu");
 		articles.add(combinaison);
-		articles.add(new Ski("Clairef", "ss", "Ski A4 Sup", 9f, 20, 80));
+		articles.add(new Ski("Clairef", "ss", "Ski A4 Sup", 9f, 20, 150));
 		articles.add(new Combinaison("Stypen", "PlumeS", "Combinaison Plume Stypen", 5.5f, 20, "jaune"));
 		articles.add(new Combinaison("Waterman", "WOBGreen", "Waterman Orion Bille vert", 4.2f, 35, "vert"));
-		articles.add(new Ski("ProDesign", "ForLaser", "A4 Special laser", 5.5f, 55, 100));
+		articles.add(new Ski("ProDesign", "ForLaser", "A4 Special laser", 5.5f, 55, 166));
 
 		CatalogueManager mger = null;
 		try {
@@ -26,7 +26,6 @@ public class AppliTestBLL {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		
 
 		// Ajout d'un article au catalogue
 		try {

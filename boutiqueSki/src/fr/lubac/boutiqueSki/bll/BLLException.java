@@ -15,7 +15,7 @@ public class BLLException extends Exception {
     }
 
     public String getMessage() {
-        StringBuffer sb = new StringBuffer("Couche DLL - ");
+        StringBuffer sb = new StringBuffer("Couche BLL - ");
         sb.append(super.getMessage());
 
         return sb.toString();

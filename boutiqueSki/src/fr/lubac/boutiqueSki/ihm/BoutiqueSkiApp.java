@@ -10,9 +10,7 @@ public class BoutiqueSkiApp {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                EcranArticle frame = new EcranArticle();
-
-                frame.setVisible(true);
+                ArticleController.getInstance().startApp();
             }
 
         });

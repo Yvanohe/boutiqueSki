@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,6 +21,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -26,6 +29,8 @@ import javax.swing.JTextField;
 import fr.lubac.boutiqueSki.bll.BLLException;
 import fr.lubac.boutiqueSki.bll.CatalogueManager;
 import fr.lubac.boutiqueSki.bo.Article;
+import fr.lubac.boutiqueSki.bo.Combinaison;
+import fr.lubac.boutiqueSki.bo.Ski;
 
 public class EcranArticle extends JFrame {
     private JLabel lblRef, lblDesign, lblMarque, lblStock, lblPrix, lblType, lblLongueur, lblCouleur;
@@ -35,22 +40,9 @@ public class EcranArticle extends JFrame {
     private JCheckBox cb150cm, cb166cm;
     private JComboBox<String> comboBoxCouleur;
     private JButton btnPrecedent, btnNouveau, btnSauvegarde, btnSupprimer, btnSuivant;
-    private CatalogueManager cmgr;
-    private List<Article> listeArticles;
+    private Integer iDArticleCourant;
 
     public EcranArticle() {
-
-        try {
-            cmgr = CatalogueManager.getInstance();
-        } catch (BLLException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            listeArticles = cmgr.getCatalogue();
-        } catch (BLLException e) {
-            e.printStackTrace();
-        }
 
         this.setTitle("Catalogue articles");
         this.setSize(new Dimension(500, 400));
@@ -120,33 +112,6 @@ public class EcranArticle extends JFrame {
         gbc.gridwidth = 2;
         panel.add(getPanelButton(), gbc);
 
-        // gbc.gridy = 6;
-        //
-
-        // gbc.gridy = 7;
-        // gbc.gridheight = 1;
-        // panel.add(getLblCouleur(), gbc);
-        // textFields :
-        // gbc.gridx = 1;
-        // // line 1 to 5
-
-        // // Radio boutons :
-        // // line 6
-        // gbc.gridy = 5;
-        // gbc.gridx = 1;
-        // // TO COMPLETE
-        // panel.add(getRbtnSki(), gbc);
-        // gbc.gridy = 6;
-        // panel.add(getRbtnCombi(), gbc);
-
-        // Initialisation of txtField with first article:
-        getTxtRef().setText(listeArticles.get(0).getReference().trim());
-        getTxtDesign().setText(listeArticles.get(0).getDesignation().trim());
-        getTxtMarque().setText(listeArticles.get(0).getMarque().trim());
-        getTxtStock().setText(String.valueOf(listeArticles.get(0).getQteStock()));
-        getTxtPrix().setText(String.valueOf(listeArticles.get(0).getPrixUnitaire()));
-
-        // Link this panel to the JFrame of ArticleScreen
         this.setContentPane(panel);
     }
 
@@ -154,13 +119,67 @@ public class EcranArticle extends JFrame {
     // CONTROLS VIEW
     // -------------
 
-    protected void afficherArticle() {
+    protected void afficherArticle(Article article) {
+        this.iDArticleCourant = article.getIdArticle();
 
+        getTxtRef().setText(article.getReference().trim());
+        getTxtDesign().setText(article.getDesignation().trim());
+        getTxtMarque().setText(article.getMarque().trim());
+        getTxtStock().setText(String.valueOf(article.getQteStock()));
+        getTxtPrix().setText(String.valueOf(article.getPrixUnitaire()));
+
+        if (article instanceof Ski) {
+            // type radio buttons
+            getRbtnSki().setSelected(true);
+            // Longueur checkbox :
+            getCb150cm().setEnabled(true);
+            getCb166cm().setEnabled(true);
+            getCb150cm().setSelected(((Ski) article).getLongueur() == 150);
+            getCb166cm().setSelected(((Ski) article).getLongueur() == 166);
+            // Couleur list selection disabled:
+            getComboBoxCouleur().setEnabled(false);
+        }
+
+        if (article instanceof Combinaison) {
+            // type radio buttons
+            getRbtnCombi().setSelected(true);
+            // Longueur checkbox disabled :
+            getCb150cm().setEnabled(false);
+            getCb166cm().setEnabled(false);
+            // couleur checkbox
+            getComboBoxCouleur().setEnabled(true);
+            getComboBoxCouleur().setSelectedItem(((Combinaison) article).getCouleur());
+
+        }
+
+        getRbtnSki().setEnabled(article.getIdArticle() == null);
+        getRbtnCombi().setEnabled(article.getIdArticle() == null);
     }
 
     // --------
     // GETTERS
     // --------
+
+    public Article getArticleCourant() {
+        Article article = null;
+
+        if (getRbtnCombi().isSelected()) {
+            article = new Combinaison(getTxtMarque().getText(), getTxtRef().getText(), getTxtDesign().getText(),
+                    Float.parseFloat(getTxtPrix().getText()), Integer.parseInt(getTxtStock().getText()),
+                    (String) getComboBoxCouleur().getSelectedItem());
+        } else {
+            article = new Ski(getTxtMarque().getText(), getTxtRef().getText(), getTxtDesign().getText(),
+                    Float.parseFloat(getTxtPrix().getText()), Integer.parseInt(getTxtStock().getText()),
+                    getCb150cm().isSelected() ? 150 : 166);
+        }
+
+        if (this.iDArticleCourant != null) {
+            article.setIdArticle(this.iDArticleCourant);
+        }
+        return article;
+
+    }
+
     public JLabel getLblRef() {
         if (lblRef == null) {
             lblRef = new JLabel("Référence");
@@ -256,6 +275,18 @@ public class EcranArticle extends JFrame {
     public JRadioButton getRbtnSki() {
         if (rbtnSki == null) {
             rbtnSki = new JRadioButton("Ski");
+
+            // if selected, desactivate color choice
+            rbtnSki.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getCb150cm().setEnabled(true);
+                    getCb166cm().setEnabled(true);
+                    getComboBoxCouleur().setEnabled(false);
+                }
+
+            });
         }
         return rbtnSki;
     }
@@ -263,6 +294,16 @@ public class EcranArticle extends JFrame {
     public JRadioButton getRbtnCombi() {
         if (rbtnCombi == null) {
             rbtnCombi = new JRadioButton("Combinaison");
+
+            // If selected, desactivate LongeurSelection
+            rbtnCombi.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getCb150cm().setEnabled(false);
+                    getCb166cm().setEnabled(false);
+                    getComboBoxCouleur().setEnabled(true);
+                }
+            });
         }
         return rbtnCombi;
     }
@@ -319,6 +360,13 @@ public class EcranArticle extends JFrame {
     public JButton getBtnPrecedent() {
         if (btnPrecedent == null) {
             btnPrecedent = new JButton();
+            btnPrecedent.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().previous();
+                }
+            });
+
             try {
                 Image img = ImageIO.read(getClass().getResource("./images/Back24.gif"));
                 btnPrecedent.setIcon(new ImageIcon(img));
@@ -333,6 +381,13 @@ public class EcranArticle extends JFrame {
     public JButton getBtnNouveau() {
         if (btnNouveau == null) {
             btnNouveau = new JButton();
+            btnNouveau.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().newArticle();
+
+                }
+            });
             try {
                 Image img = ImageIO.read(getClass().getResource("./images/New24.gif"));
                 btnNouveau.setIcon(new ImageIcon(img));
@@ -346,6 +401,12 @@ public class EcranArticle extends JFrame {
     public JButton getBtnSauvegarde() {
         if (btnSauvegarde == null) {
             btnSauvegarde = new JButton();
+            btnSauvegarde.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().save();
+                }
+            });
             try {
                 Image img = ImageIO.read(getClass().getResource("./images/Save24.gif"));
                 btnSauvegarde.setIcon(new ImageIcon(img));
@@ -359,6 +420,13 @@ public class EcranArticle extends JFrame {
     public JButton getBtnSupprimer() {
         if (btnSupprimer == null) {
             btnSupprimer = new JButton();
+            btnSupprimer.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().deleteArticle();
+                }
+
+            });
             try {
                 Image img = ImageIO.read(getClass().getResource("./images/Delete24.gif"));
                 btnSupprimer.setIcon(new ImageIcon(img));
@@ -372,6 +440,12 @@ public class EcranArticle extends JFrame {
     public JButton getBtnSuivant() {
         if (btnSuivant == null) {
             btnSuivant = new JButton();
+            btnSuivant.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().next();
+                }
+            });
             try {
                 Image img = ImageIO.read(getClass().getResource("./images/Forward24.gif"));
                 btnSuivant.setIcon(new ImageIcon(img));
@@ -393,6 +467,14 @@ public class EcranArticle extends JFrame {
             panelButton.add(getBtnSuivant());
         }
         return panelButton;
+    }
+
+    public Integer getiDArticleCourant() {
+        return iDArticleCourant;
+    }
+
+    public void infoErreur(String msg) {
+        JOptionPane.showMessageDialog(EcranArticle.this, msg, "", JOptionPane.ERROR_MESSAGE);
     }
 
 }

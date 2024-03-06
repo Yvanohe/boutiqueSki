@@ -1,7 +1,7 @@
 package fr.lubac.boutiqueSki.bo;
 
 public abstract class Article {
-    private int idArticle;
+    private Integer idArticle;
     private String reference, marque, designation;
     private float prixUnitaire;
     private int qteStock;
@@ -31,7 +31,7 @@ public abstract class Article {
     // GETTERS AND SETTERS
     // -------------------
 
-    public int getIdArticle() {
+    public Integer getIdArticle() {
         return idArticle;
     }
 
