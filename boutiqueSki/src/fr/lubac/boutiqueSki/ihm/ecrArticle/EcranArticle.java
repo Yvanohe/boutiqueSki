@@ -1,20 +1,14 @@
 package fr.lubac.boutiqueSki.ihm.ecrArticle;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -28,15 +22,18 @@ import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.ihm.ArticleController;
+import fr.lubac.boutiqueSki.ihm.IPanelBoutonObserver;
+import fr.lubac.boutiqueSki.ihm.PanelBoutons;
 
-public class EcranArticle extends JFrame {
+public class EcranArticle extends JFrame implements IPanelBoutonObserver {
     private JLabel lblRef, lblDesign, lblMarque, lblStock, lblPrix, lblType, lblLongueur, lblCouleur;
     private JTextField txtRef, txtDesign, txtMarque, txtStock, txtPrix;
-    private JPanel panelType, panelLongueur, panelButton;
+    private JPanel panelType, panelLongueur;
     private JRadioButton rbtnSki, rbtnCombi;
     private JCheckBox cb150cm, cb166cm;
     private JComboBox<String> comboBoxCouleur;
-    private JButton btnPrecedent, btnNouveau, btnSauvegarde, btnSupprimer, btnSuivant;
+    private PanelBoutons panelButton;
+
     private Integer iDArticleCourant;
 
     public EcranArticle() {
@@ -352,114 +349,10 @@ public class EcranArticle extends JFrame {
         return comboBoxCouleur;
     }
 
-    public JButton getBtnPrecedent() {
-        if (btnPrecedent == null) {
-            btnPrecedent = new JButton();
-            btnPrecedent.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ArticleController.getInstance().previous();
-                }
-            });
-
-            try {
-                Image img = ImageIO.read(getClass().getResource("../images/Back24.gif"));
-                btnPrecedent.setIcon(new ImageIcon(img));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return btnPrecedent;
-    }
-
-    public JButton getBtnNouveau() {
-        if (btnNouveau == null) {
-            btnNouveau = new JButton();
-            btnNouveau.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ArticleController.getInstance().newArticle();
-
-                }
-            });
-            try {
-                Image img = ImageIO.read(getClass().getResource("../images/New24.gif"));
-                btnNouveau.setIcon(new ImageIcon(img));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return btnNouveau;
-    }
-
-    public JButton getBtnSauvegarde() {
-        if (btnSauvegarde == null) {
-            btnSauvegarde = new JButton();
-            btnSauvegarde.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ArticleController.getInstance().save();
-                }
-            });
-            try {
-                Image img = ImageIO.read(getClass().getResource("../images/Save24.gif"));
-                btnSauvegarde.setIcon(new ImageIcon(img));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return btnSauvegarde;
-    }
-
-    public JButton getBtnSupprimer() {
-        if (btnSupprimer == null) {
-            btnSupprimer = new JButton();
-            btnSupprimer.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ArticleController.getInstance().deleteArticle();
-                }
-
-            });
-            try {
-                Image img = ImageIO.read(getClass().getResource("../images/Delete24.gif"));
-                btnSupprimer.setIcon(new ImageIcon(img));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return btnSupprimer;
-    }
-
-    public JButton getBtnSuivant() {
-        if (btnSuivant == null) {
-            btnSuivant = new JButton();
-            btnSuivant.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ArticleController.getInstance().next();
-                }
-            });
-            try {
-                Image img = ImageIO.read(getClass().getResource("../images/Forward24.gif"));
-                btnSuivant.setIcon(new ImageIcon(img));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return btnSuivant;
-    }
-
-    public JPanel getPanelButton() {
+    public PanelBoutons getPanelButton() {
         if (panelButton == null) {
-            panelButton = new JPanel();
-            panelButton.setLayout(new FlowLayout());
-            panelButton.add(getBtnPrecedent());
-            panelButton.add(getBtnNouveau());
-            panelButton.add(getBtnSauvegarde());
-            panelButton.add(getBtnSupprimer());
-            panelButton.add(getBtnSuivant());
+            panelButton = new PanelBoutons();
+            panelButton.addPanelBoutonObserver(this);
         }
         return panelButton;
     }
@@ -468,6 +361,41 @@ public class EcranArticle extends JFrame {
         return iDArticleCourant;
     }
 
+    // --------------------------------------
+    // Interface IPanemBoutonObserver methods
+    // --------------------------------------
+    @Override
+    public void precedent() {
+        ArticleController.getInstance().previous();
+    }
+
+    @Override
+    public void suivant() {
+        ArticleController.getInstance().next();
+
+    }
+
+    @Override
+    public void nouveau() {
+        ArticleController.getInstance().newArticle();
+
+    }
+
+    @Override
+    public void enregistrer() {
+        ArticleController.getInstance().save();
+
+    }
+
+    @Override
+    public void supprimer() {
+        ArticleController.getInstance().deleteArticle();
+
+    }
+
+    // ----------------------------
+    // Dialog window to show error
+    // ----------------------------
     public void infoErreur(String msg) {
         JOptionPane.showMessageDialog(EcranArticle.this, msg, "", JOptionPane.ERROR_MESSAGE);
     }
