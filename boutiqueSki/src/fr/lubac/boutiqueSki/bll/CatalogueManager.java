@@ -6,8 +6,8 @@ import java.util.List;
 import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
-import fr.lubac.boutiqueSki.dal.ArticleDAO;
 import fr.lubac.boutiqueSki.dal.DALException;
+import fr.lubac.boutiqueSki.dal.DAO;
 import fr.lubac.boutiqueSki.dal.DAOFactory;
 
 /**
@@ -15,7 +15,7 @@ import fr.lubac.boutiqueSki.dal.DAOFactory;
  * 
  */
 public class CatalogueManager {
-    private ArticleDAO daoArticle;
+    private DAO<Article> daoArticle;
     private static CatalogueManager instance;
 
     // Singleton design pattern

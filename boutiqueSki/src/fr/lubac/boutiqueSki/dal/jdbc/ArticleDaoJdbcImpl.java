@@ -12,10 +12,10 @@ import java.util.List;
 import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
-import fr.lubac.boutiqueSki.dal.ArticleDAO;
 import fr.lubac.boutiqueSki.dal.DALException;
+import fr.lubac.boutiqueSki.dal.DAO;
 
-public class ArticleDaoJdbcImpl implements ArticleDAO {
+public class ArticleDaoJdbcImpl implements DAO<Article> {
     private static final String TABLE_NAME = "Articles";
 
     // ---------
