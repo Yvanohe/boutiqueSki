@@ -1,6 +1,10 @@
 package fr.lubac.boutiqueSki.ihm;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 
 import fr.lubac.boutiqueSki.bll.BLLException;
 import fr.lubac.boutiqueSki.bll.CatalogueManager;
@@ -43,8 +47,12 @@ public class ArticleController implements ICatalogueObserver {
         this.ecranArticle = new EcranArticle();
         this.ecranCatalogue = new EcranCatalogue();
         this.afficherPremierArticle();
-        ecranArticle.setVisible(true);
+
         ecranCatalogue.setVisible(true);
+    }
+
+    public void showCatalogueEditor() {
+        ecranArticle.setVisible(true);
     }
 
     public void afficherPremierArticle() {
@@ -134,15 +142,50 @@ public class ArticleController implements ICatalogueObserver {
         return this.listeArticles;
     }
 
+    public void fitlerCatalogueByMarque(String marque) {
+        List<Article> listeByMarque;
+        try {
+            listeByMarque = cmgr.getArticleByMarque(marque);
+            this.ecranCatalogue.getTableCatalogueModel().setCatalogue(listeByMarque);
+        } catch (BLLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void fitlerCatalogueByMotCle(String mot) {
+        List<Article> listeByMot;
+        try {
+            listeByMot = cmgr.getArticleByMotCle(mot);
+            this.ecranCatalogue.getTableCatalogueModel().setCatalogue(listeByMot);
+        } catch (BLLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void updateCatalogue() {
         try {
             this.listeArticles = cmgr.getCatalogue();
             this.ecranCatalogue.getTableCatalogueModel().setCatalogue(listeArticles);
+            updateMarqueList();
 
         } catch (BLLException e) {
             e.printStackTrace();
         }
+    }
+
+    // Update the ComboBox of ecranCatalogue to list all differnte marques
+    public void updateMarqueList() {
+        this.ecranCatalogue.getComboBoxMarque().setModel(new DefaultComboBoxModel<>(this.retrieveMarqueList()));
+    }
+
+    // Construct an array with all "marques" from all product in catalogue
+    public String[] retrieveMarqueList() {
+        String[] marques = new String[this.listeArticles.size()];
+        for (int i = 0; i < marques.length; i++) {
+            marques[i] = listeArticles.get(i).getMarque();
+        }
+        return marques;
     }
 
 }

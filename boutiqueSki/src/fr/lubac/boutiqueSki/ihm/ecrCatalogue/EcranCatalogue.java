@@ -2,7 +2,8 @@ package fr.lubac.boutiqueSki.ihm.ecrCatalogue;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -14,15 +15,14 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
-import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.ihm.ArticleController;
 
 public class EcranCatalogue extends JFrame {
     private JTable tableau;
     private JPanel recherchePanel;
     private JPanel boutonEditionCataloguePanel;
-    private JButton btnRechercheMarque, btnRecherceMotCle, btnEditionCatalogue;
-    private JTextField txtMotCle;
+    private JButton btnRechercheMarque, btnRecherceMotCle, btnEditionCatalogue, btnAffichetTout;
+    private JTextField txtMotCle, txtMarque;
     private JComboBox<String> comboBoxMarque;
     TableCatalogueModel tableCatalogueModel;
 
@@ -40,6 +40,7 @@ public class EcranCatalogue extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.PAGE_AXIS));
         panel.add(new JScrollPane(getTableau()));
         panel.add(getRecherchePanel());
+        panel.add(getBoutonEditionCataloguePanel());
         // this.setContentPane(new JScrollPane(getTableau()));
         this.setContentPane(panel);
     }
@@ -76,13 +77,39 @@ public class EcranCatalogue extends JFrame {
     public JPanel getBoutonEditionCataloguePanel() {
         if (boutonEditionCataloguePanel == null) {
             boutonEditionCataloguePanel = new JPanel();
+            boutonEditionCataloguePanel.add(getBtnEditionCatalogue());
         }
         return boutonEditionCataloguePanel;
+    }
+
+    public JButton getBtnEditionCatalogue() {
+        if (btnEditionCatalogue == null) {
+            btnEditionCatalogue = new JButton("Editer le catalogue");
+            btnEditionCatalogue.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().showCatalogueEditor();
+                }
+
+            });
+        }
+        return btnEditionCatalogue;
     }
 
     public JButton getBtnRechercheMarque() {
         if (btnRechercheMarque == null) {
             btnRechercheMarque = new JButton("Recherche par marque");
+            btnRechercheMarque.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance()
+                            .fitlerCatalogueByMarque((String) getComboBoxMarque().getSelectedItem());
+
+                }
+
+            });
         }
         return btnRechercheMarque;
     }
@@ -90,12 +117,31 @@ public class EcranCatalogue extends JFrame {
     public JButton getBtnRecherceMotCle() {
         if (btnRecherceMotCle == null) {
             btnRecherceMotCle = new JButton("Recherche par mot clé");
+            btnRecherceMotCle.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    ArticleController.getInstance().fitlerCatalogueByMotCle(getTxtMotCle().getText());
+                }
+
+            });
         }
         return btnRecherceMotCle;
     }
 
-    public JButton getBtnEditionCatalogue() {
-        return btnEditionCatalogue;
+    public JButton getBtnAffichetTout() {
+        if (btnAffichetTout == null) {
+            btnAffichetTout = new JButton("Afficher tout");
+            btnAffichetTout.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    getTableCatalogueModel().setCatalogue(ArticleController.getInstance().getCatalogue());
+                }
+
+            });
+        }
+        return btnAffichetTout;
     }
 
     public JTextField getTxtMotCle() {
@@ -108,10 +154,8 @@ public class EcranCatalogue extends JFrame {
 
     public JComboBox<String> getComboBoxMarque() {
         if (comboBoxMarque == null) {
-            String[] marques = { "ROSSIGNOL", "WEDZE", "HEAD", "ATOMIC" }; // To Improve that this list should be shared
-                                                                           // by CatalogueManager and this view
-                                                                           // (interface ?)
-            comboBoxMarque = new JComboBox<String>(marques);
+            // For list retrieves marques from all product in catalogue :
+            comboBoxMarque = new JComboBox<String>(ArticleController.getInstance().retrieveMarqueList());
         }
         return comboBoxMarque;
     }
@@ -120,11 +164,11 @@ public class EcranCatalogue extends JFrame {
         if (recherchePanel == null) {
             recherchePanel = new JPanel();
             recherchePanel.setLayout(new FlowLayout());
-
             recherchePanel.add(getComboBoxMarque());
             recherchePanel.add(getBtnRechercheMarque());
             recherchePanel.add(getTxtMotCle());
             recherchePanel.add(getBtnRecherceMotCle());
+            recherchePanel.add(getBtnAffichetTout());
         }
         return recherchePanel;
     }

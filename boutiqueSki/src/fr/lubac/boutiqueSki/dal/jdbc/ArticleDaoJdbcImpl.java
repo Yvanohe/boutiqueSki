@@ -155,8 +155,8 @@ public class ArticleDaoJdbcImpl implements DAOArticle {
             con = JdbcTools.getConnection();
             // Prepare Statement :
             pstmt = con.prepareStatement(sqlSelectByMotCle);
-            pstmt.setString(1, mot);
-            pstmt.setString(2, mot);
+            pstmt.setString(1, "%" + mot + "%");
+            pstmt.setString(2, "%" + mot + "%");
 
             // execute request :
             ResultSet rs = pstmt.executeQuery();

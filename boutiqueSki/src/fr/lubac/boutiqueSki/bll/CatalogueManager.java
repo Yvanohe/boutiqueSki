@@ -7,7 +7,7 @@ import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.dal.DALException;
-import fr.lubac.boutiqueSki.dal.DAO;
+import fr.lubac.boutiqueSki.dal.DAOArticle;
 import fr.lubac.boutiqueSki.dal.DAOFactory;
 import fr.lubac.boutiqueSki.ihm.ICatalogueObserver;
 
@@ -16,7 +16,7 @@ import fr.lubac.boutiqueSki.ihm.ICatalogueObserver;
  * 
  */
 public class CatalogueManager {
-    private DAO<Article> daoArticle;
+    private DAOArticle daoArticle;
     private static CatalogueManager instance;
     private List<ICatalogueObserver> observateurs;
 
@@ -45,7 +45,7 @@ public class CatalogueManager {
     }
 
     /**
-     * @return catalogue des articles
+     * @return product catalogue
      * 
      */
 
@@ -62,8 +62,8 @@ public class CatalogueManager {
 
     /**
      * 
-     * @param id : id d'un article
-     * @return Article
+     * @param id : product id
+     * @return Article (product)
      * @throws BLLException
      */
     public Article getArticle(int id) throws BLLException {
@@ -77,11 +77,39 @@ public class CatalogueManager {
     }
 
     /**
-     * Ajout d'un article dans le catalogue
+     * 
+     * @param marque
+     * @return list of products (Article) of the given brand
+     * @throws BLLException
+     */
+    public List<Article> getArticleByMarque(String marque) throws BLLException {
+        List<Article> catalogueArticles = new ArrayList<>();
+        try {
+            catalogueArticles = this.daoArticle.selectByMarque(marque);
+        } catch (DALException e) {
+            e.printStackTrace();
+            throw new BLLException("Erreur récupération catalogue par marque", e);
+        }
+        return catalogueArticles;
+    }
+
+    public List<Article> getArticleByMotCle(String mot) throws BLLException {
+        List<Article> catalogueArticles = new ArrayList<>();
+        try {
+            catalogueArticles = this.daoArticle.selectByMotCle(mot);
+        } catch (DALException e) {
+            e.printStackTrace();
+            throw new BLLException("Erreur récupération catalogue par mot clé", e);
+        }
+        return catalogueArticles;
+    }
+
+    /**
+     * Add a product in the catalogue
      * 
      * @param article
-     * @return index du nouvel article dans le catalogue mis à jour dans l'objet
-     *         article mis en entrée
+     * @return index of the new product (Article) in the catalogue updated in
+     *         Article object put in params
      * @throws BLLException
      */
 
@@ -99,7 +127,7 @@ public class CatalogueManager {
     }
 
     /**
-     * updateArticle : modifier un article dans le catalogue
+     * updateArticle : update a product
      * 
      * @param article
      * @throws BLLException
@@ -118,7 +146,7 @@ public class CatalogueManager {
     }
 
     /**
-     * Supprimer un article du catalogue
+     * Delete a product from catalogue (DB)
      * 
      * @param id
      * @throws BLLException
@@ -136,7 +164,7 @@ public class CatalogueManager {
     }
 
     /**
-     * Valider les données d'un article
+     * Validate a article
      * 
      * @param article
      * @throws BLLException
