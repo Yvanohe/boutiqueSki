@@ -13,9 +13,9 @@ import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Combinaison;
 import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.dal.DALException;
-import fr.lubac.boutiqueSki.dal.DAO;
+import fr.lubac.boutiqueSki.dal.DAOArticle;
 
-public class ArticleDaoJdbcImpl implements DAO<Article> {
+public class ArticleDaoJdbcImpl implements DAOArticle {
     private static final String TABLE_NAME = "Articles";
 
     // ---------
@@ -23,6 +23,10 @@ public class ArticleDaoJdbcImpl implements DAO<Article> {
     // ---------
     private static final String sqlSelectById = "select idArticle, reference, marque, designation, prixUnitaire, qteStock, longueur, couleur, type "
             + "from " + TABLE_NAME + " where idArticle = ?";
+    private static final String sqlSelectByMarque = "select idArticle, reference, marque, designation, prixUnitaire, qteStock, longueur, couleur, type "
+            + "from " + TABLE_NAME + " where marque = ?";
+    private static final String sqlSelectByMotCle = "select idArticle, reference, marque, designation, prixUnitaire, qteStock, longueur, couleur, type "
+            + "from " + TABLE_NAME + " where marque LIKE ? OR designation LIKE ?";
     private static final String sqlSelectAll = "SELECT * from Articles";
     private static final String sqlUpdate = "update articles set reference=?, marque=?, designation=?, prixUnitaire=?, qteStock=?, longueur=?, couleur=? WHERE idArticle=?";
     private static final String sqlInsert = "INSERT INTO " + TABLE_NAME
@@ -84,6 +88,118 @@ public class ArticleDaoJdbcImpl implements DAO<Article> {
             }
         }
         return article;
+    }
+
+    @Override
+    public List<Article> selectByMarque(String marque) throws DALException {
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        List<Article> listeArticles = new ArrayList<>();
+
+        try {
+            con = JdbcTools.getConnection();
+            // Prepare Statement :
+            pstmt = con.prepareStatement(sqlSelectByMarque);
+            pstmt.setString(1, marque);
+            // execute request :
+            ResultSet rs = pstmt.executeQuery();
+            // should have only one result so take the first anyway :
+            while (rs.next()) {
+                String type = rs.getString("type").trim();
+
+                switch (type) {
+                    case "Ski":
+                        listeArticles
+                                .add(new Ski(rs.getInt("idArticle"), rs.getString("marque"), rs.getString("reference"),
+                                        rs.getString("designation"), rs.getFloat("prixUnitaire"), rs.getInt("qteStock"),
+                                        rs.getInt("longueur")));
+                        break;
+
+                    case "Combi":
+                        listeArticles.add(new Combinaison(rs.getInt("idArticle"), rs.getString("marque"),
+                                rs.getString("reference"),
+                                rs.getString("designation"), rs.getFloat("prixUnitaire"), rs.getInt("qteStock"),
+                                rs.getString("couleur")));
+                        break;
+                    default:
+                        System.out.println("Rien trouvé pour : " + type);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DALException("Echec du SelectByMarque - marque = " + marque, e);
+        } finally {
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                JdbcTools.closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return listeArticles;
+    }
+
+    @Override
+    public List<Article> selectByMotCle(String mot) throws DALException {
+        PreparedStatement pstmt = null;
+        Connection con = null;
+        List<Article> listeArticles = new ArrayList<>();
+
+        try {
+            con = JdbcTools.getConnection();
+            // Prepare Statement :
+            pstmt = con.prepareStatement(sqlSelectByMotCle);
+            pstmt.setString(1, mot);
+            pstmt.setString(2, mot);
+
+            // execute request :
+            ResultSet rs = pstmt.executeQuery();
+            // should have only one result so take the first anyway :
+            while (rs.next()) {
+                String type = rs.getString("type").trim();
+
+                switch (type) {
+                    case "Ski":
+                        listeArticles
+                                .add(new Ski(rs.getInt("idArticle"), rs.getString("marque"), rs.getString("reference"),
+                                        rs.getString("designation"), rs.getFloat("prixUnitaire"), rs.getInt("qteStock"),
+                                        rs.getInt("longueur")));
+                        break;
+
+                    case "Combi":
+                        listeArticles.add(new Combinaison(rs.getInt("idArticle"), rs.getString("marque"),
+                                rs.getString("reference"),
+                                rs.getString("designation"), rs.getFloat("prixUnitaire"), rs.getInt("qteStock"),
+                                rs.getString("couleur")));
+                        break;
+                    default:
+                        System.out.println("Rien trouvé pour : " + type);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new DALException("Echec du SelectByMotCle - mot = " + mot, e);
+        } finally {
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                JdbcTools.closeConnection();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return listeArticles;
     }
 
     public List<Article> selectAll() throws DALException {

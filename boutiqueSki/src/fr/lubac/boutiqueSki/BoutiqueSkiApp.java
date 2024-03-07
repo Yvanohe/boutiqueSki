@@ -1,6 +1,8 @@
-package fr.lubac.boutiqueSki.ihm;
+package fr.lubac.boutiqueSki;
 
 import javax.swing.SwingUtilities;
+
+import fr.lubac.boutiqueSki.ihm.ArticleController;
 
 public class BoutiqueSkiApp {
 

@@ -343,7 +343,8 @@ public class EcranArticle extends JFrame implements IPanelBoutonObserver {
 
     public JComboBox<String> getComboBoxCouleur() {
         if (comboBoxCouleur == null) {
-            String[] couleurs = { "bleu", "rouge", "noir", "vert" };
+            String[] couleurs = { "bleu", "rouge", "noir", "vert" }; // To Improve that this list should be shared by
+                                                                     // CatalogueManager and this view (interface ?)
             comboBoxCouleur = new JComboBox<String>(couleurs);
         }
         return comboBoxCouleur;

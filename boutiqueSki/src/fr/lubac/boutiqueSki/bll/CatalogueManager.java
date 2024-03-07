@@ -9,6 +9,7 @@ import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.dal.DALException;
 import fr.lubac.boutiqueSki.dal.DAO;
 import fr.lubac.boutiqueSki.dal.DAOFactory;
+import fr.lubac.boutiqueSki.ihm.ICatalogueObserver;
 
 /**
  * @author Yvan Lubac
@@ -17,6 +18,7 @@ import fr.lubac.boutiqueSki.dal.DAOFactory;
 public class CatalogueManager {
     private DAO<Article> daoArticle;
     private static CatalogueManager instance;
+    private List<ICatalogueObserver> observateurs;
 
     // Singleton design pattern
     public static CatalogueManager getInstance() throws BLLException {
@@ -30,6 +32,16 @@ public class CatalogueManager {
     private CatalogueManager() throws BLLException {
         // get Data Access Object
         daoArticle = DAOFactory.getArticleDAO();
+        observateurs = new ArrayList<>();
+    }
+
+    /**
+     * Adding observer to be notified when catalogue change
+     * 
+     * @param obs
+     */
+    public void addCatalogueObserver(ICatalogueObserver obs) {
+        observateurs.add(obs);
     }
 
     /**
@@ -78,6 +90,9 @@ public class CatalogueManager {
         try {
             this.validerArticle(article);
             this.daoArticle.insert(article);
+            for (ICatalogueObserver obs : observateurs) {
+                obs.updateCatalogue();
+            }
         } catch (DALException e) {
             throw new BLLException("Echec addArticle", e);
         }
@@ -94,6 +109,9 @@ public class CatalogueManager {
         try {
             this.validerArticle(article);
             this.daoArticle.update(article);
+            for (ICatalogueObserver obs : observateurs) {
+                obs.updateCatalogue();
+            }
         } catch (DALException e) {
             throw new BLLException("Echec updateArticle de l'article:" + article, e);
         }
@@ -109,6 +127,9 @@ public class CatalogueManager {
     public void removeArticle(int id) throws BLLException {
         try {
             this.daoArticle.delete(id);
+            for (ICatalogueObserver obs : observateurs) {
+                obs.updateCatalogue();
+            }
         } catch (DALException e) {
             throw new BLLException("Echec de la suppression de l'article - ", e);
         }

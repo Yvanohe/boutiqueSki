@@ -2,14 +2,10 @@ package fr.lubac.boutiqueSki.ihm.ecrCatalogue;
 
 import java.util.List;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 
-import fr.lubac.boutiqueSki.bll.BLLException;
-import fr.lubac.boutiqueSki.bll.CatalogueManager;
 import fr.lubac.boutiqueSki.bo.Article;
 import fr.lubac.boutiqueSki.bo.Ski;
-import fr.lubac.boutiqueSki.ihm.ArticleController;
 
 public class TableCatalogueModel extends AbstractTableModel {
 
@@ -19,6 +15,13 @@ public class TableCatalogueModel extends AbstractTableModel {
 
     public TableCatalogueModel(List<Article> catalogue) {
         this.catalogue = catalogue;
+    }
+
+    public void setCatalogue(List<Article> catalogue) {
+        this.catalogue = catalogue;
+
+        fireTableDataChanged(); // data changed : JTable which use this TableModel should redraw the table from
+                                // scratch
     }
 
     @Override

@@ -9,7 +9,7 @@ import fr.lubac.boutiqueSki.bo.Ski;
 import fr.lubac.boutiqueSki.ihm.ecrArticle.EcranArticle;
 import fr.lubac.boutiqueSki.ihm.ecrCatalogue.EcranCatalogue;
 
-public class ArticleController {
+public class ArticleController implements ICatalogueObserver {
     private EcranArticle ecranArticle;
     private EcranCatalogue ecranCatalogue;
     private CatalogueManager cmgr;
@@ -20,6 +20,7 @@ public class ArticleController {
     public static ArticleController getInstance() {
         if (instance == null) {
             instance = new ArticleController();
+            instance.cmgr.addCatalogueObserver(instance);
         }
         return instance;
     }
@@ -28,6 +29,7 @@ public class ArticleController {
     private ArticleController() {
         try {
             cmgr = CatalogueManager.getInstance();
+
             listeArticles = cmgr.getCatalogue();
             indexCatalogue = 0;
         } catch (BLLException e) {
@@ -93,12 +95,12 @@ public class ArticleController {
             }
         }
         // Retrieve updated catalogue
-        try {
-            this.listeArticles = cmgr.getCatalogue();
-        } catch (BLLException e) {
-            this.ecranArticle.infoErreur(e.getMessage());
-            e.printStackTrace();
-        }
+        // try {
+        // this.listeArticles = cmgr.getCatalogue();
+        // } catch (BLLException e) {
+        // this.ecranArticle.infoErreur(e.getMessage());
+        // e.printStackTrace();
+        // }
 
     }
 
@@ -111,7 +113,7 @@ public class ArticleController {
     public void deleteArticle() {
         try {
             this.cmgr.removeArticle(this.ecranArticle.getiDArticleCourant());
-            this.listeArticles = cmgr.getCatalogue();
+            // this.listeArticles = cmgr.getCatalogue();
         } catch (BLLException e) {
             this.ecranArticle.infoErreur(e.getMessage());
             e.printStackTrace();
@@ -130,6 +132,17 @@ public class ArticleController {
 
     public List<Article> getCatalogue() {
         return this.listeArticles;
+    }
+
+    @Override
+    public void updateCatalogue() {
+        try {
+            this.listeArticles = cmgr.getCatalogue();
+            this.ecranCatalogue.getTableCatalogueModel().setCatalogue(listeArticles);
+
+        } catch (BLLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
