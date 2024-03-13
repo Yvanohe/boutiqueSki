@@ -18,19 +18,17 @@ public class JdbcTools {
     // load jdbc driver in memory when class is first loaded in JVM memory :
     static {
         try {
-            Class.forName(Settings.getProperties("driverdb"));
+            Class.forName(Settings.getProperty("driverdb"));
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        urldb = Settings.getProperties("urldb") + DATABASE_NAME + ";trustServerCertificate=true";
-        userdb = Settings.getProperties("userdb");
-        passwordDb = Settings.getProperties("db_password");
+        urldb = Settings.getProperty("urldb") + DATABASE_NAME + ";trustServerCertificate=true";
+        userdb = Settings.getProperty("userdb");
+        passwordDb = Settings.getProperty("db_password");
     }
 
     public static Connection getConnection() throws SQLException {
         if (connection == null) {
-
-            // get connection :
             connection = DriverManager.getConnection(urldb, userdb, passwordDb);
             System.out.println("Connexion à la base de données");
         }

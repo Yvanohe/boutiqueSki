@@ -85,12 +85,12 @@ public abstract class Article {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Article id [idArticle=" + this.idArticle + ", ");
-        sb.append("reference=" + this.reference + ", ");
-        sb.append("marque=" + this.marque + ", ");
-        sb.append("designation=" + this.designation + ", ");
-        sb.append("prixUnitaire=" + this.prixUnitaire + ", ");
-        sb.append("qteStock=" + this.qteStock + "]");
+        sb.append("Article id= " + this.idArticle + ", ");
+        sb.append("reference= " + this.reference + ", ");
+        sb.append("marque= " + this.marque + ", ");
+        sb.append("designation= " + this.designation + ", ");
+        sb.append("prixUnitaire= " + this.prixUnitaire + ", ");
+        sb.append("qteStock= " + this.qteStock + "]");
 
         return sb.toString();
     }
